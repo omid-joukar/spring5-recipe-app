@@ -11,6 +11,7 @@ class Spring5RecipeAppApplicationTests {
 
     @Test
     void contextLoads() {
+
     }
 
 }
