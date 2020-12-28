@@ -1,5 +1,6 @@
 package omid.springframework.converters;
 
+import org.hibernate.annotations.Synchronize;
 import org.springframework.lang.Nullable;
 import lombok.Synchronized;
 import omid.springframework.commands.IngredientCommand;
@@ -17,6 +18,7 @@ public class IngredientCommandToIngredient implements Converter<IngredientComman
     }
 
     @Nullable
+    @Synchronized
     @Override
     public Ingredient convert(IngredientCommand source) {
         if (source == null) {
