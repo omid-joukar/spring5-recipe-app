@@ -21,23 +21,29 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class IngredientServiceImplTest {
-    @Mock
-    RecipeRepository recipeRepository;
-    @Mock
-    UnitOfMeasureRepository unitOfMeasureRepository;
-    private final IngredientToIngredientCommand ingredientToIngredientCommand;
-    private final IngredientCommandToIngredient ingredientCommandToIngredient;
-    IngredientService ingredientService;
-    public IngredientServiceImplTest() {
-        this.ingredientToIngredientCommand = new IngredientToIngredientCommand(new UnitOfMeasureToUnitOfMeasureCommand());
-        this.ingredientCommandToIngredient = new IngredientCommandToIngredient(new UnitOfMeasureCommandToUnitOfMeasure());
-    }
+        private final IngredientToIngredientCommand ingredientToIngredientCommand;
+        private final IngredientCommandToIngredient ingredientCommandToIngredient;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        ingredientService = new IngredientServiceImpl(recipeRepository,ingredientToIngredientCommand,ingredientCommandToIngredient,unitOfMeasureRepository);
-    }
+        @Mock
+        RecipeRepository recipeRepository;
+
+        @Mock
+        UnitOfMeasureRepository unitOfMeasureRepository;
+
+        IngredientService ingredientService;
+
+        //init converters
+        public IngredientServiceImplTest() {
+            this.ingredientToIngredientCommand = new IngredientToIngredientCommand(new UnitOfMeasureToUnitOfMeasureCommand());
+            this.ingredientCommandToIngredient = new IngredientCommandToIngredient(new UnitOfMeasureCommandToUnitOfMeasure());
+        }
+
+        @Before
+        public void setUp() throws Exception {
+            MockitoAnnotations.initMocks(this);
+
+            ingredientService = new IngredientServiceImpl(recipeRepository,ingredientToIngredientCommand,ingredientCommandToIngredient, unitOfMeasureRepository);
+        }
 
     @Test
     public void findByRecipeIdAndId() throws Exception {
@@ -91,4 +97,17 @@ public class IngredientServiceImplTest {
         verify(recipeRepository,times(1)).save(any(Recipe.class));
     }
 
+    @Test
+    public void deleteByRecipeIdAndIngredientId() {
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(2L);
+        recipe.getIngredients().add(ingredient);
+        ingredient.setRecipe(recipe);
+        when(recipeRepository.findById(anyLong())).thenReturn(Optional.of(recipe));
+        ingredientService.deleteByRecipeIdAndIngredientId(1L,2l);
+        verify(recipeRepository,times(1)).findById(anyLong());
+        verify(recipeRepository,times(1)).save(any(Recipe.class));
+    }
 }

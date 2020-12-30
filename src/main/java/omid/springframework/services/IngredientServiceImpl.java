@@ -2,6 +2,7 @@ package omid.springframework.services;
 
 import lombok.extern.slf4j.Slf4j;
 import omid.springframework.commands.IngredientCommand;
+import omid.springframework.commands.RecipeCommand;
 import omid.springframework.converters.IngredientCommandToIngredient;
 import omid.springframework.converters.IngredientToIngredientCommand;
 import omid.springframework.domain.Ingredient;
@@ -85,6 +86,27 @@ public class IngredientServiceImpl implements IngredientService {
 
             //to do check for fail
             return ingredientToIngredientCommand.convert(savedIngredientOptional.get());
+        }
+    }
+
+    @Override
+    public void deleteByRecipeIdAndIngredientId(Long recipeId, Long id) {
+        Optional<Recipe> recipeOptional = recipeRepository.findById(recipeId);
+        if(!recipeOptional.isPresent()){
+            log.error("there is no recipe with this id : " + recipeId);
+        }else {
+            Recipe recipe = recipeOptional.get();
+            Optional<Ingredient> ingredientOptional =
+                    recipe.getIngredients().stream().
+                            filter(ingredient -> ingredient.getId().equals(id)).findFirst();
+            if (ingredientOptional.isPresent()){
+                Ingredient foundIngredient = ingredientOptional.get();
+                foundIngredient.setRecipe(null);
+                recipe.getIngredients().remove(foundIngredient);
+                recipeRepository.save(recipe);
+            }else {
+                log.error("ingredient by id not found : " + id);
+            }
         }
     }
 }
