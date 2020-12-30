@@ -73,6 +73,7 @@ public class IngredientServiceImplTest {
         assertEquals(Long.valueOf(1L), ingredientCommand.getRecipeId());
         verify(recipeRepository, times(1)).findById(anyLong());
     }
+
     @Test
     public void testSaveRecipeCommand() throws Exception{
         IngredientCommand ingredientCommand = new IngredientCommand();

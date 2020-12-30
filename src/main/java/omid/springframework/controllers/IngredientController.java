@@ -2,6 +2,8 @@ package omid.springframework.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import omid.springframework.commands.IngredientCommand;
+import omid.springframework.commands.RecipeCommand;
+import omid.springframework.commands.UnitOfMeasureCommand;
 import omid.springframework.services.IngredientService;
 import omid.springframework.services.RecipeService;
 import omid.springframework.services.UnitOfMeasureService;
@@ -52,5 +54,16 @@ public class IngredientController {
         log.debug("saved recipe id :"+savedCommand.getRecipeId() );
         log.debug("saved ingredient id : "+ savedCommand.getId());
         return "redirect:/recipe/"+savedCommand.getRecipeId()+"/ingredient/"+savedCommand.getId()+"/show";
+    }
+    @GetMapping
+    @RequestMapping("/recipe/{recipeId}/ingredient/new")
+    public String createNewIngredient(@PathVariable String recipeId,Model model){
+        RecipeCommand recipeCommand = recipeService.findCommandById(Long.valueOf(recipeId));
+        IngredientCommand ingredientCommand = new IngredientCommand();
+        ingredientCommand.setRecipeId(recipeCommand.getId());
+        model.addAttribute("ingredient",ingredientCommand);
+        ingredientCommand.setUom(new UnitOfMeasureCommand());
+        model.addAttribute("uomList",unitOfMeasureService.listAllUoms());
+        return "recipe/ingredient/ingredientform";
     }
 }
