@@ -1,5 +1,6 @@
 package omid.springframework.services;
 
+import omid.springframework.commands.RecipeCommand;
 import omid.springframework.domain.Recipe;
 import omid.springframework.repositories.RecipeRepository;
 import org.junit.Before;
@@ -7,6 +8,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
@@ -19,6 +21,7 @@ import static org.mockito.Mockito.*;
 public class ImageServiceImplTest {
     @Mock
     RecipeRepository recipeRepository;
+
     ImageService imageService;
     @Before
     public void setUp() throws Exception {
@@ -39,4 +42,5 @@ public class ImageServiceImplTest {
         Recipe savedRecipe = argumentCaptor.getValue();
         assertEquals(multipartFile.getBytes().length,savedRecipe.getImage().length);
     }
+
 }

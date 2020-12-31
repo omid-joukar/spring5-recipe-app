@@ -1,7 +1,9 @@
 package omid.springframework.controllers;
 
+import omid.springframework.commands.RecipeCommand;
 import omid.springframework.services.ImageService;
 import omid.springframework.services.RecipeService;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-    @Controller
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
+@Controller
     public class ImageController {
         private final ImageService imageService;
         private final RecipeService recipeService;
@@ -29,5 +35,17 @@ import org.springframework.web.multipart.MultipartFile;
         public String handleImagePost(@PathVariable String id, @RequestParam("imagefile")MultipartFile file){
             imageService.saveImageFile(Long.valueOf(id),file);
             return "redirect:/recipe/"+id+"/show";
+        }
+        @GetMapping("recipe/{id}/recipeimage")
+        public void readImageOfDB(@PathVariable String id, HttpServletResponse response)throws Exception{
+            RecipeCommand command = recipeService.findCommandById(Long.valueOf(id));
+            byte[] byteArray = new byte[command.getImage().length];
+            int i = 0 ;
+            for (byte wrappedByte : command.getImage()){
+                byteArray[i++] = wrappedByte;
+            }
+            response.setContentType("image/jpeg");
+            InputStream is = new ByteArrayInputStream(byteArray);
+            IOUtils.copy(is,response.getOutputStream());
         }
     }
