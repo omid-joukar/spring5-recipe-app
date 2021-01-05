@@ -2,6 +2,7 @@ package omid.springframework.controllers;
 
 import omid.springframework.commands.RecipeCommand;
 import omid.springframework.domain.Recipe;
+import omid.springframework.exceptions.NotFoundException;
 import omid.springframework.services.RecipeService;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +40,15 @@ public class RecipeControllerTest {
                 .andExpect(status().isOk()).
                 andExpect(view().name("recipe/show"))
                 .andExpect(model().attributeExists("recipe"));
+    }
+    @Test
+    public void testGetRecipeNotFound()throws Exception{
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+        when(recipeService.findById(anyLong())).thenThrow(NotFoundException.class);
+        mockMvc.perform(MockMvcRequestBuilders.get("/recipe/1/show"))
+                .andExpect(status().isNotFound())
+        .andExpect(view().name("404error"));
     }
     @Test
     public void testGetRecipe() throws Exception {

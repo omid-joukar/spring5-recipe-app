@@ -5,6 +5,7 @@ import omid.springframework.commands.RecipeCommand;
 import omid.springframework.converters.RecipeCommandToRecipe;
 import omid.springframework.converters.RecipeToRecipeCommand;
 import omid.springframework.domain.Recipe;
+import omid.springframework.exceptions.NotFoundException;
 import omid.springframework.repositories.RecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,7 @@ public class RecipeServiceImpl implements RecipeService {
     public Recipe findById(Long id) {
         Optional<Recipe> recipeOptional = recipeRepository.findById(id);
         if (!recipeOptional.isPresent()){
-            throw new RuntimeException("Recipe not found");
+            throw new NotFoundException("Recipe not found");
         }
         return recipeOptional.get();
     }

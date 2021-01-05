@@ -3,6 +3,7 @@ package omid.springframework.services;
 import omid.springframework.converters.RecipeCommandToRecipe;
 import omid.springframework.converters.RecipeToRecipeCommand;
 import omid.springframework.domain.Recipe;
+import omid.springframework.exceptions.NotFoundException;
 import omid.springframework.repositories.RecipeRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -50,6 +52,13 @@ public class RecipeServiceImplTest {
         verify(recipeRepository,times(1)).findById(anyLong());
         verify(recipeRepository,never()).findAll();
     }
+    @Test(expected = NotFoundException.class)
+    public void getRecipeByIdNotFOund() throws Exception{
+        Optional<Recipe> recipeOptional = Optional.empty();
+        when(recipeRepository.findById(anyLong())).thenReturn(recipeOptional);
+        Recipe recipeReturned = recipeService.findById(1L);
+    }
+
     @Test
     public void testDeleteBYId(){
         Long idToDelete = Long.valueOf(2l);
